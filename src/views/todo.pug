@@ -1,26 +1,33 @@
 doctype html
 html
-    head
-        meta(charset="UTF-8")
-        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
-        script(src="/bundle.js")
-        block head
-            title ToDo
-    body
-        .container
-            #todo.row
-                .col-md-6.col-md-offset-3
-                    form(v-on:submit="createToDo")
-                        .form-group
-                            textarea.form-control(v-model="newTodo.body" required)
-                        .form-group
-                            input.btn.btn-primary.btn-block(type="submit" value="追加")
-                    #todos.panel-group  
-                        .panel.panel-default(v-for="todo in todos")
-                            .panel-body 
-                                label
-                                    input(type="checkbox" v-model="todo.isCompleted")
-                                    | {{ todo.body }}
-                            .panel-footer
-                                button.btn.btn-default.btn-sm(type="button" v-on:click="deleteTodo(todo)")
-                                    span.glyphicon.glyphicon-trash Delete
+  head
+    meta(charset="UTF-8")
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+    script(src="/bundle.js")
+    title ToDo
+  body
+    .container
+      #todo.row
+        .col-md-6.col-md-offset-3
+          form(v-on:submit="createTodo")
+            .form-group
+              textarea.form-control(v-model="newTodo.body" required)
+            .form-group
+              input.btn.btn-primary.btn-block(type="submit" value="追加")
+          mixin todos(title, targetTodos)
+            .panel-group
+              h2= title
+              .panel.panel-default(v-for=`todo in ${targetTodos}`)
+                .panel-body
+                  label.checkbox-inline
+                    input(type="checkbox" v-model="todo.isCompleted")
+                    input(type="text" v-model="todo.body")
+                .panel-footer
+                  button.btn.btn-default.btn-sm(type="button" v-on:click="deleteTodo(todo)")
+                    span.glyphicon.glyphicon-trash Delete
+          .col-md-6
+              +todos('未完了', 'activeTodos')
+          .col-md-6
+              +todos('完了', 'completedTodos')
+              button.btn.btn-danger.btn-block(type="button" v-if="completedTodos.length" v-on:click="purgeTodo")
+                span.glyphicon.glyphicon-trash AllDelete
